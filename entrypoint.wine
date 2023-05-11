@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e -o pipefail
+
+# Configure: wine
+if [[ ! -e "${EP_RUN}" ]] ; then
+	log "Configuring $(basename "${0}") for first run ..."
+
+	# Volume initialization
+	if [[ ! -f "${WINE_DATA}/wine.conf" ]] ; then
+		log "Initializing data volume ..."
+
+		install --directory --group="${X11_GNAME}" --mode=0755 --owner="${X11_UNAME}" "${WINE_DATA}/userdata"
+	else
+		log "Skipping volume initialization ..."
+	fi
+
+	find "${WINE_DATA}" \( \! -user "${X11_UNAME}" -o \! -group "${X11_GNAME}" \) -exec chown "${X11_UNAME}:${X11_GNAME}" {} \;
+fi
+
